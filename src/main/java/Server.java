@@ -33,6 +33,7 @@ public class Server {
              final var out = new BufferedOutputStream(socket.getOutputStream())) {
             Request request = new Request(in);
             Handler handler = handlers.get(request.getMethod() + request.getPathString());
+
             if (handler == null) {
                 out.write((
                         "HTTP/1.1 404 Not Found\r\n" +
@@ -43,9 +44,17 @@ public class Server {
                 out.flush();
                 return;
             }
+            printRequestInfo(request);
             handler.handle(request, out);
         } catch (IOException exception) {
             exception.printStackTrace();
         }
+    }
+
+    private static void printRequestInfo(Request request) {
+        System.out.println(request.getMethod());
+        System.out.println(request.getPathString());
+        System.out.println(request.getHeader());
+        System.out.println(request.getBody());
     }
 }
